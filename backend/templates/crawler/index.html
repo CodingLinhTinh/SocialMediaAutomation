@@ -1,0 +1,40 @@
+{% extends 'base.html' %} 
+
+{% block header %}
+    <h1>{% block title %}IG Accounts{% endblock %}</h1>
+    {% if g.user %}
+        <a class="action" href="{{ url_for('crawler.add_ig') }}">Add IG Clone Account</a>
+    {% endif %}
+
+{% endblock %} 
+
+{% block content %}
+<article class="crawler">
+  <header>
+    <h1>IG Account</h1>
+    <h1>IG Password</h1>
+  </header>
+
+  {% for ig_acc in ig_accs %}
+    <header>
+      <h4>{{ ig_acc['username'] }}</h4>
+      <h4>{{ ig_acc['password'] }}</h4>
+
+      {% if g.user['id'] == ig_acc['user_id'] %}
+        <a class="action" href="{{ url_for('crawler.update', id=ig_acc['id']) }}">Edit</a>
+      {% endif %}
+
+      <a class="action" href="{{ url_for('crawler.run', id=ig_acc['id']) }}">Run</a>
+    
+    </header>
+</article>
+
+
+    {% if not loop.last %}
+      <hr />
+    {% endif %} 
+  {% endfor %}
+
+
+
+{% endblock %}

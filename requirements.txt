@@ -1,0 +1,4 @@
+Flask
+instagrapi
+pandas
+Pillow

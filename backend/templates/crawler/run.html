@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Exactor{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+
+<article class="crawler">
+    <header>
+      <h1>Exactor</h1>
+    </header>
+      <form method="post">
+        <label for="keywords">Keywords</label>
+        <input name="keywords" id="keywords" value="{{ request.form['keywords'] }}" required>
+        
+        <input type="submit" value="Run">
+      </form>
+      <!-- Process bar -->
+
+
+  </article>
+
+  <article class="crawler">
+    <header>
+      <h1>Displaying Data </h1>
+    </header>
+
+    <table border="1">
+      <tr>
+        <td>Username</td>
+        <td>Full Name</td>
+        <td>Phone</td>
+        <td>Email</td>
+      </tr>
+      <!-- cho vòng lặp ở đây -->
+    </table>
+      <!-- Process bar -->
+
+
+  </article>
+
+{% endblock %}

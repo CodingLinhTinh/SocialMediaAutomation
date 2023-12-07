@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Edit "{{ ig_acc['username'] }}"{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <form method="post">
+    <label for="ig_username">IG Username</label>
+    <input name="ig_username" id="ig_username"
+      value="{{ request.form['ig_username'] or ig_acc['ig_username'] }}">
+
+    <label for="ig_password">IG Password</label>
+    <input name="ig_password" id="ig_password"
+      value="{{ request.form['ig_password'] or ig_acc['ig_password'] }}">
+    
+    <input type="submit" value="Update">
+  </form>
+  <hr>
+  <form action="{{ url_for('crawler.delete', id=ig_acc['id']) }}" method="post">
+    <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
+  </form>
+{% endblock %}

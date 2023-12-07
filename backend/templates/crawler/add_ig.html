@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Add IG Account{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+
+  <form method="post">
+    <label for="ig_username">IG Username</label>
+    <input name="ig_username" id="ig_username" value="{{ request.form['ig_username'] }}" required>
+    
+    <label for="ig_password">IG Password</label>
+    <input name="ig_password" id="ig_password" value="{{ request.form['ig_password'] }}" required>
+    
+    <input type="submit" value="Add">
+  </form>
+
+{% endblock %}
