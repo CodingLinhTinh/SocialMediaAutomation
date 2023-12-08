@@ -3,7 +3,7 @@
 {% block header %}
     <h1>{% block title %}IG Accounts{% endblock %}</h1>
     {% if g.user %}
-        <a class="action" href="{{ url_for('crawler.add_ig') }}">Add IG Clone Account</a>
+        <a class="action" href="{{ url_for('instagram.add_ig') }}">Add IG Clone Account</a>
     {% endif %}
 
 {% endblock %} 
@@ -21,10 +21,12 @@
       <h4>{{ ig_acc['password'] }}</h4>
 
       {% if g.user['id'] == ig_acc['user_id'] %}
-        <a class="action" href="{{ url_for('crawler.update', id=ig_acc['id']) }}">Edit</a>
-      {% endif %}
+        <a class="action" href="{{ url_for('instagram.update', id=ig_acc['id']) }}">Edit</a>
+        <a class="action" href="{{ url_for('instagram.run', id=ig_acc['id']) }}">Run</a>
+        <a class="action" href="{{ url_for('instagram.automate', id=ig_acc['id']) }}">Automation</a>
 
-      <a class="action" href="{{ url_for('crawler.run', id=ig_acc['id']) }}">Run</a>
+      
+      {% endif %}
       
       {% if not loop.last %}
       <hr />

@@ -9,6 +9,9 @@ from instagrapi.mixins.challenge import ChallengeChoice
 import pandas as pd
 import time 
 import re
+import os
+
+from backend.classes.Automation import Automation
 
 bp = Blueprint("instagram", __name__)
 
@@ -236,8 +239,77 @@ def run(id):
             pass    
     return render_template("instagram/run.html")
 
-###----- IG Target --------##   
+###----- IG Automation --------##   
+@bp.route("/<int:id>/automate", methods=("GET", "POST"))
+@login_required
+def automate(id):
+    client = Client()
+    ig_acc = get_ig_accs(id)
+    
+    if request.method == "POST":
+        try:
+            form_type = request.form.get('form_type')
 
+            if form_type == 'target_username':
+                # Handle the first form
+                ## IG login :v
+                automation.clientLogin(str(ig_acc["username"]), str(ig_acc["password"]))
 
+                print("Logged In.")
+                target_username = str(request.form["target_username"])
+                follow_followers = bool(request.form.get('follow_followers'))
+                unfollow_followers = bool(request.form.get('unfollow_followers'))
 
-###----- IG Uplooad Img --------##   
+                # Your logic for the first form
+                
+                if follow_followers and not unfollow_followers:
+                    pass 
+                
+                if unfollow_followers and not follow_followers:
+                    pass
+
+            elif form_type == 'upload_photos':
+                automation = Automation()
+                ## IG login :v
+                automation.clientLogin(str(ig_acc["username"]), str(ig_acc["password"]))
+                print("Logged In.")
+                time.sleep(5)
+                
+                # Handle the second form
+                caption = str(request.form["caption"])
+                custom_accessibility_caption = str(request.form["custom_accessibility_caption"])
+                like_and_view_counts_disabled = bool(request.form.get('like_and_view_counts_disabled'))
+                disable_comments = bool(request.form.get('disable_comments'))
+                
+                if 'image' in request.files:
+                    image = request.files['image']
+
+                    # Ensure the directory exists
+                    upload_directory = './static/img/'
+                    if not os.path.exists(upload_directory):
+                        os.makedirs(upload_directory)
+
+                    # Save the file to the specified directory
+                    destination_path = os.path.join(upload_directory, image.filename)
+                    
+                    # Save the content of the uploaded file to the destination file
+                    with open(destination_path, 'wb') as file:
+                        file.write(image.read())
+                    
+                    automation.PhotoUpload(
+                        path=destination_path,
+                        caption=caption,
+                        custom_accessibility_caption=custom_accessibility_caption,
+                        like_and_view_counts_disabled= int( like_and_view_counts_disabled ),
+                        disable_comments=int( disable_comments )
+                    )
+                    print("Uploaded.")
+            else:
+                # Handle other cases or show an error
+                pass
+
+        except Exception as e:
+            print(e)
+            pass
+
+    return render_template("instagram/automation.html")  

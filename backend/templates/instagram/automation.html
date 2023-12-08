@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Automation{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<h1> Target IG Username </h1>
+<form method="post">
+    <input type="hidden" name="form_type" value="target_username">
+    <label for="target_username">Target Username</label>
+    <input name="target_username" id="target_username" value="{{ request.form['target_username'] }}" >
+    
+    <label for="follow_followers">Follow their followers
+    <input type="checkbox" id="follow_followers" name="follow_followers">
+    
+    <label for="unfollow_followers">UnFollow their followers
+    <input type="checkbox" id="unfollow_followers" name="unfollow_followers">
+    
+    <br>
+    <input type="submit" value="Start">
+</form>
+<hr>
+
+<h1> Upload Photos </h1>
+<form method="post" enctype="multipart/form-data">
+    <input type="hidden" name="form_type" value="upload_photos">
+
+    <label for="caption">Caption</label>
+    <input name="caption" id="caption" value="{{ request.form['caption'] }}" >
+
+    <label for="custom_accessibility_caption">Custom accessibility caption</label>
+    <input type="text" id="custom_accessibility_caption" name="custom_accessibility_caption">
+      
+    <label for="like_and_view_counts_disabled">Like and view counts disabled
+    <input type="checkbox" id="like_and_view_counts_disabled" name="like_and_view_counts_disabled">
+    
+    <label for="disable_comments">Disable comments
+    <input type="checkbox" id="disable_comments" name="disable_comments">
+    
+    <br>
+    <label for="image">Upload Img</label>
+    <input type="file" name="image" accept="image/*">
+
+    <br>
+    <input type="submit" value="Upload">
+</form>
+
+
+
+{% endblock %}
