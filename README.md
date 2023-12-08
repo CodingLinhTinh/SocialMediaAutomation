@@ -22,10 +22,6 @@ python -r install requirements.txt
 
 ### Run
 
-```python
-cd backend
-```
-
 ### Initialize the db
 ```python
 flask --app backend init-db
