@@ -2,10 +2,13 @@
 import os 
 
 from flask import Flask
+from flask_ngrok import run_with_ngrok
 
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
+    run_with_ngrok(app)
+    
     app.config.from_mapping(
         SECRET_KEY='dev',
         DATABASE=os.path.join(app.instance_path, 'automation.sqlite'),
@@ -37,6 +40,9 @@ def create_app(test_config=None):
     
     from . import crawler
     app.register_blueprint(crawler.bp)
+    
+    from . import instagram
+    app.register_blueprint(instagram.bp)
     app.add_url_rule('/', endpoint='index')
     
     return app 

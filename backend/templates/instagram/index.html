@@ -1,0 +1,16 @@
+{% extends 'base.html' %} 
+
+{% block header %}
+    <h1>{% block title %}IG Automation{% endblock %}</h1>
+    {% if g.user %}
+        <a class="action" href="{{ url_for('crawler.index') }}">Exactor</a>
+    {% endif %}
+
+{% endblock %} 
+
+{% block content %}
+<article class="crawler">
+
+
+</article>
+{% endblock %}

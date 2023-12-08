@@ -14,7 +14,7 @@ bp = Blueprint("crawler", __name__)
 
 
 ## MainPage
-@bp.route("/")
+@bp.route("/crawler")
 def index():
     db = get_db()
     ig_accs = db.execute(
@@ -27,7 +27,7 @@ def index():
 
 ###----- IG Account --------##
 ## Add an IG Account
-@bp.route("/add_ig", methods=("GET", "POST"))
+@bp.route("/crawler/add_ig", methods=("GET", "POST"))
 @login_required
 def add_ig():
     if request.method == "POST":
@@ -55,7 +55,8 @@ def add_ig():
 
 def get_ig_accs(id, check_ig_acc=True):
     ig_acc = (
-        get_db().execute(
+        get_db()
+        .execute(
             "SELECT i.id, i.username, i.password, user_id"
             " FROM ig_clone_account i JOIN user u ON i.user_id = u.id"
             " WHERE i.id = ?",
@@ -74,7 +75,7 @@ def get_ig_accs(id, check_ig_acc=True):
 
 
 ## Updating an Account
-@bp.route("/<int:id>/update", methods=("GET", "POST"))
+@bp.route("/crawler/<int:id>/update", methods=("GET", "POST"))
 @login_required
 def update(id):
     ig_acc = get_ig_accs(id)
@@ -116,7 +117,7 @@ def delete(id):
 ###----- IG Crawler --------##
  
         
-@bp.route("/<int:id>/run", methods=("GET", "POST"))
+@bp.route("/crawler/<int:id>/run", methods=("GET", "POST"))
 @login_required
 def run(id):
     client = Client()
@@ -169,19 +170,14 @@ def run(id):
                         phone           = re.findall(r'\b\d{10,11}\b', biography)
                         
                         ##----
-                        crawler_data = (
-                            get_db().execute(
-                                "SELECT c.id, user_id, username, full_name, phone, email"
-                                "FROM crawler c JOIN user u ON c.user_id = u.id"
-                            )
-                            .fetchone()
+                        sql_query = (
+                            "SELECT c.id, c.user_id, c.username, c.full_name, c.phone, c.email "
+                            "FROM crawler c JOIN user u ON c.user_id = u.id"
                         )
 
-                        if crawler_data is None:
-                            abort(404, f"crawler_data don't exist.")
-
-                        if crawler_data["user_id"] != g.user["id"]:
-                            abort(403)
+                        crawler_data = get_db().execute(sql_query).fetchall()
+                        
+                        print(crawler_data)
                             
                         ##----
                         if username not in crawler_data:

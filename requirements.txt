@@ -1,4 +1,5 @@
 Flask
-instagrapi
+flask_ngrok
+instagrapi==1.18.5
 pandas
 Pillow
