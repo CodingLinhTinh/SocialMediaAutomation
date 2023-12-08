@@ -38,9 +38,6 @@ def create_app(test_config=None):
     from . import auth
     app.register_blueprint(auth.bp)
     
-    from . import crawler
-    app.register_blueprint(crawler.bp)
-    
     from . import instagram
     app.register_blueprint(instagram.bp)
     app.add_url_rule('/', endpoint='index')

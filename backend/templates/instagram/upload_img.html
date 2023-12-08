@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Add IG Account{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+
+    <form method="post">
+        <label for="title">Title</label>
+        <input name="title" id="title" value="{{ request.form['title'] }}" >
+        
+        <label for="caption">Caption</label>
+        <input name="caption" id="caption" value="{{ request.form['caption'] }}" >
+
+        <label for="caption">Upload Img</label>
+        <input type="file" name="image" accept="image/*">
+        
+        <br>
+        <input type="submit" value="Upload">
+    </form>
+
+{% endblock %}
