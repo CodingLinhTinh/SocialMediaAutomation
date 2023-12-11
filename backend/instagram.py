@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, g, redirect, render_template, request, url_for
+from flask import Blueprint, flash, g, redirect, render_template, request, url_for, send_file
 from werkzeug.exceptions import abort
 
 from backend.auth import login_required
@@ -130,7 +130,13 @@ def run(id):
     follower_count      = None
     email               = None
     phone               = None
-    
+                            ##----
+    sql_query = (
+        "SELECT c.id, c.user_id, c.username, c.full_name, c.email, c.phone "
+        "FROM crawler c JOIN user u ON c.user_id = u.id"
+    )
+
+    crawler_data = get_db().execute(sql_query).fetchall()
     if request.method == "POST":
         try:
             client.login(str(ig_acc["username"]),  str(ig_acc["password"]))
@@ -169,16 +175,6 @@ def run(id):
 
                         email           = re.findall(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b', biography)
                         phone           = re.findall(r'\b\d{10,11}\b', biography)
-                        
-                        ##----
-                        sql_query = (
-                            "SELECT c.id, c.user_id, c.username, c.full_name, c.phone, c.email "
-                            "FROM crawler c JOIN user u ON c.user_id = u.id"
-                        )
-
-                        crawler_data = get_db().execute(sql_query).fetchall()
-                        
-                        print(crawler_data)
                             
                         ##----
                         if username not in crawler_data:
@@ -213,7 +209,7 @@ def run(id):
                                         ## Add to db    
                                         db = get_db()
                                         db.execute(
-                                            "INSERT INTO crawler (user_id, username,full_name,phone,email)"
+                                            "INSERT INTO crawler (user_id, username,full_name,email,phone)"
                                             " VALUES (?, ?, ?, ?, ?)",
                                             (g.user["id"],username, full_name, phone, email),
                                         )
@@ -224,7 +220,7 @@ def run(id):
                                     ## Add to db    
                                     db = get_db()
                                     db.execute(
-                                        "INSERT INTO crawler (user_id, username,full_name,phone,email)"
+                                        "INSERT INTO crawler (user_id, username,full_name,email,phone)"
                                         " VALUES (?, ?, ?, ?, ?)",
                                         (g.user["id"],username, full_name, phone, email),
                                     )
@@ -236,8 +232,49 @@ def run(id):
             
         except Exception as e:
             print(e)
-            pass    
-    return render_template("instagram/run.html")
+            pass 
+
+    
+    return render_template("instagram/run.html", crawler_data=crawler_data)
+
+## Download CSV
+
+@bp.route("/download_csv", methods=("GET", "POST"))
+@login_required
+def download_csv():
+    is_downable = False
+    
+    if request.method == "GET":
+        is_downable = True
+        
+        file_path = os.path.join(os.getcwd(), "backend/data", "crawler_data.csv")
+        sql_query = (
+            "SELECT c.username, c.full_name, c.email, c.phone "
+            "FROM crawler c JOIN user u ON c.user_id = u.id"
+        )
+
+        crawler_data = get_db().execute(sql_query).fetchall()
+        
+        ## Lưu crawler data vào file csv với đuồng dẫn file_path và tải file csv từ file_path đó xuống
+        # Convert the SQLite data to a DataFrame
+        column_names = ["username", "full_name", "email", "phone"]
+        df = pd.DataFrame(crawler_data, columns=column_names)
+
+        # Save the DataFrame to a CSV file
+        df.to_csv(file_path, index=False)
+
+        # Return the CSV file as a downloadable attachment
+        if is_downable == True:
+            return send_file(
+                file_path,
+                as_attachment=True,
+                download_name="crawler_data.csv",
+                mimetype="text/csv",
+            )
+        
+    return render_template("instagram/download_csv.html")
+    
+
 
 ###----- IG Automation --------##   
 @bp.route("/<int:id>/automate", methods=("GET", "POST"))
@@ -251,23 +288,32 @@ def automate(id):
             form_type = request.form.get('form_type')
 
             if form_type == 'target_username':
-                # Handle the first form
                 ## IG login :v
+                automation = Automation()
                 automation.clientLogin(str(ig_acc["username"]), str(ig_acc["password"]))
+                time.sleep(3)
 
                 print("Logged In.")
+                
                 target_username = str(request.form["target_username"])
                 follow_followers = bool(request.form.get('follow_followers'))
                 unfollow_followers = bool(request.form.get('unfollow_followers'))
-
-                # Your logic for the first form
+                amount = int( request.form.get('target_numbers', '10') )
                 
-                if follow_followers and not unfollow_followers:
-                    pass 
-                
-                if unfollow_followers and not follow_followers:
-                    pass
-
+                user_id = automation.getUserInfoByUsername(target_username)
+                data = automation.getTheirFollowersID(user_id, amount)
+                    
+                for d in data:
+                    if follow_followers and not unfollow_followers:
+                        automation.FollowUser(d)
+                        print(f"{d} is followed")
+                        time.sleep(3)
+            
+                    if unfollow_followers and not follow_followers:
+                        automation.UnFollowUser(d)
+                        print(f"{d} is unfollowed")
+                        time.sleep(3)
+                        
             elif form_type == 'upload_photos':
                 automation = Automation()
                 ## IG login :v
@@ -285,7 +331,7 @@ def automate(id):
                     image = request.files['image']
 
                     # Ensure the directory exists
-                    upload_directory = './static/img/'
+                    upload_directory = 'backend/static/img'
                     if not os.path.exists(upload_directory):
                         os.makedirs(upload_directory)
 

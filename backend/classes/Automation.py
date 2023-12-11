@@ -79,6 +79,12 @@ class Automation:
     def getUserInfoByUsername(self, username):
         return self.client.user_id_from_username(username)
     
+    def getTheirFollowersID(self, user_id, amount):
+        return self.client.user_followers(user_id=user_id, amount=amount)
+    
+    def getUserInfoByID(self, user_id):
+        return self.client.user_info(user_id).dict()
+    
     ## View
     def getUserMedias(self, user_id, amount):
         result = []

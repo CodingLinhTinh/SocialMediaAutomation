@@ -11,6 +11,12 @@
     <label for="target_username">Target Username</label>
     <input name="target_username" id="target_username" value="{{ request.form['target_username'] }}" >
     
+    <label for="target_numbers">Target Numbers of Followers</label>
+    <div class="slidecontainer">
+      <input type="range" min="10" max="30" name="target_numbers" value="{{ request.form['target_numbers'] }}" class="slider" id="target_numbers">
+      <p>Numbers of followers: <span id="demo"></span></p>
+    </div>
+
     <label for="follow_followers">Follow their followers
     <input type="checkbox" id="follow_followers" name="follow_followers">
     
@@ -21,6 +27,17 @@
     <input type="submit" value="Start">
 </form>
 <hr>
+
+
+<script>
+  var slider = document.getElementById("target_numbers");
+  var output = document.getElementById("demo");
+  output.innerHTML = slider.value;
+  
+  slider.oninput = function() {
+    output.innerHTML = this.value;
+  }
+  </script>
 
 <h1> Upload Photos </h1>
 <form method="post" enctype="multipart/form-data">

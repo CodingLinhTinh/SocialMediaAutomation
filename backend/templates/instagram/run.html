@@ -16,28 +16,36 @@
         
         <input type="submit" value="Run">
       </form>
-      <!-- Process bar -->
 
-
-  </article>
-
-  <article class="crawler">
-    <header>
-      <h1>Displaying Data </h1>
-    </header>
-
-    <table border="1">
-      <tr>
-        <td>Username</td>
-        <td>Full Name</td>
-        <td>Phone</td>
-        <td>Email</td>
-      </tr>
-      <!-- cho vòng lặp ở đây -->
-    </table>
-      <!-- Process bar -->
-
-
+      <a href="{{ url_for('instagram.download_csv') }}">Download CSV</a>
+      
+      <article class="crawler">
+        <header>
+          <h1>Displaying Data </h1>
+        </header>
+    
+        <table border="1">
+          <tr>
+            <td>Username</td>
+            <td>Full Name</td>
+            <td>Email</td>
+            <td>Phone</td>
+          </tr>
+          <!-- cho vòng lặp ở đây -->
+          {% for crawler_data in crawler_data %}
+            <tr>
+                <td>{{ crawler_data['username'] }}</td>
+                <td>{{ crawler_data['full_name'] }}</td>
+                <td>{{ crawler_data['email'] }}</td>
+                <td>{{ crawler_data['phone'] }}</td>
+            </tr>
+          {% endfor %}
+    
+        </table>
+          <!-- Process bar -->
+    
+    
+      </article>
   </article>
 
 {% endblock %}
